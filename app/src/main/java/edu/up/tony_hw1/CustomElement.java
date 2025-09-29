@@ -4,7 +4,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
-
+import android.graphics.RectF;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,33 +15,42 @@ public class CustomElement {
         BASE, ROOF, SUN, DOOR, WINDOW, CLOUD
     }
 
-    public static class Element
-    {
+    public static class Element {
         private HouseType type;
         private Paint paint;
-        // private int color;
-        // private Float x, y, size;
 
-        public Element(HouseType type, int color)
-        {
+        private String name;
+
+        private RectF bounds;
+
+        public Element(HouseType type, int color) {
             this.type = type;
             this.paint = new Paint();
             this.paint.setColor(color);
         }
 
-        public HouseType getType()
-        {
+        public HouseType getType() {
             return type;
+
         }
 
-        public Paint getPaint()
+        public int getColor() {
+            return paint.getColor();
+        }
+
+        public String getName()
         {
-            return paint;
+            return name;
         }
 
         public void setColor(int color)
         {
             paint.setColor(color);
+        }
+
+        public boolean withinBounds(float x, float y)
+        {
+            return bounds.contains(x, y);
         }
 
         public void draw(Canvas canvas)
@@ -50,32 +59,45 @@ public class CustomElement {
             {
                 // BASE ROOF SUN DOOR WINDOW CLOUD
                 case BASE:
-                    canvas.drawRect(700, 750, 1500, 1625, paint);
+
+                    bounds.set(700, 750, 1500, 1625);
+                    canvas.drawRect(bounds, paint);
+
+                    // canvas.drawRect(700, 750, 1500, 1625, paint);
                     break;
 
                 case ROOF:
+                    bounds.set(700, 400, 1500, 750);
                     Path triangle = new Path();
-                    triangle.moveTo(1125,400);
-                    triangle.lineTo(700,750);
-                    triangle.lineTo(1500,750);
+
+                    triangle.moveTo(1125, 400);
+                    triangle.moveTo(700, 750);
+                    triangle.moveTo(1500, 750);
+
                     triangle.close();
                     canvas.drawPath(triangle, paint);
                     break;
 
                 case SUN:
-                    canvas.drawCircle(2000,250,150, paint);
+                    bounds.set(1850, 100, 2150, 400);
+                    // canvas.drawCircle(2000,250,150, paint);
+
+                    canvas.drawCircle(2000, 250, 150, paint);
                     break;
 
                 case DOOR:
-                    canvas.drawRect(850,1300, 1000, 1625, paint);
+                    bounds.set(850, 1300, 1000, 1625);
+                    canvas.drawRect(bounds, paint);
                     break;
 
                 case WINDOW:
-                    canvas.drawRect(1200,1200, 1400, 1400, paint);
+                    bounds.set(1200,1200, 1400, 1400);
+                    canvas.drawRect(bounds, paint);
                     break;
 
                 case CLOUD:
-                    canvas.drawRect(200,100, 900, 300, paint);
+                    bounds.set(200,100, 900, 300);
+                    canvas.drawRect(bounds, paint);
                     break;
             }
 
@@ -90,10 +112,10 @@ public class CustomElement {
         elements = new ArrayList<>();
 
         // Set Color for each particular element
-        elements.add(new Element(HouseType.BASE, Color.BLACK));
+        elements.add(new Element(HouseType.BASE, Color.RED));
         elements.add(new Element(HouseType.ROOF, Color.GREEN));
         elements.add(new Element(HouseType.SUN, Color.YELLOW));
-        elements.add(new Element(HouseType.DOOR, Color.RED));
+        elements.add(new Element(HouseType.DOOR, Color.BLACK));
         elements.add(new Element(HouseType.WINDOW, Color.CYAN));
         elements.add(new Element(HouseType.CLOUD, Color.WHITE));
     }
@@ -112,9 +134,5 @@ public class CustomElement {
     {
         return elements.size();
     }
-
-
-
-
 
 }
