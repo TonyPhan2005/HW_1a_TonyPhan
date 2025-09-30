@@ -1,28 +1,39 @@
 package edu.up.tony_hw1;
 
+import android.widget.SeekBar;
+import android.widget.TextView;
+
 public class DrawingModel {
 
-    private CustomElement.Element selectedElement;
-    private CustomElement elements;
+    // public CustomElement houseElement;
 
-    public DrawingModel()
+    CustomElement houseElement = new CustomElement();
+    public int currentIndex = -1;
+
+    // References to UI
+    public TextView elementName;
+    public SeekBar redSeek;
+    public SeekBar greenSeek;
+    public SeekBar blueSeek;
+
+
+    public CustomElement customElement;
+
+    public DrawingModel(CustomElement element)
     {
-        elements = new CustomElement();
+        this.customElement = element;
     }
 
-    public CustomElement getElements()
+    public CustomElement.Element getCurrentElement()
     {
-        return elements;
+        if (currentIndex >= 0 && currentIndex < houseElement.size())
+        {
+            return houseElement.getElement(currentIndex);
+        }
+        // Else, return null/empty
+        return null;
     }
 
-    public void setSelectedElements(CustomElement.Element e)
-    {
-        selectedElement = e;
-    }
-
-    public CustomElement.Element getSelectedElements()
-    {
-        return selectedElement;
-    }
 }
+
 

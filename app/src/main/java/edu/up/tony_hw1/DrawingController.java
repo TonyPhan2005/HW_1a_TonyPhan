@@ -1,63 +1,97 @@
+// Tony Phan
+// CS301 - Object Oriented
+
 package edu.up.tony_hw1;
 
+import static edu.up.tony_hw1.DrawingSurface.CANVAS_HEIGHT;
+import static edu.up.tony_hw1.DrawingSurface.CANVAS_WIDTH;
+
+import android.graphics.Color;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.SeekBar;
-import android.widget.TextView;
 
-public class DrawingController implements SeekBar.OnSeekBarChangeListener, View.OnTouchListener {
+public class DrawingController implements View.OnTouchListener, SeekBar.OnSeekBarChangeListener{
 
-
-    // All used variables
-    private DrawingModel model;
     private DrawingSurface drawingSurface;
-    private TextView nameElement;
+    private DrawingModel model;
 
-    private SeekBar redSeek;
-    private SeekBar greenSeek;
-    private SeekBar blueSeek;
-
-    // Initializing all variables to be within the scope
-    // Controller class implements most of the function/control
-    public DrawingController(DrawingModel model, DrawingSurface drawingSurface, TextView nameElement, SeekBar redSeek, SeekBar greenSeek, SeekBar blueSeek)
+    // Initializing variables to be within scope
+    public DrawingController(DrawingSurface surface, DrawingModel model)
     {
+        this.drawingSurface = surface;
         this.model = model;
-        this.drawingSurface = drawingSurface;
-        this.nameElement = nameElement;
-        this.redSeek = redSeek;
-        this.greenSeek = greenSeek;
-        this.blueSeek = blueSeek;
-
-        redSeek.setOnSeekBarChangeListener(this);
-        greenSeek.setOnSeekBarChangeListener(this);
-        blueSeek.setOnSeekBarChangeListener(this);
-
     }
 
-    public void handleTouch(float x, float y)
+    @Override
+    public boolean onTouch(View view, MotionEvent event)
     {
 
-        for(customElement.Element e : model.getElements())
+        if(event.getAction() == MotionEvent.ACTION_DOWN)
         {
 
-            if(e.withinBounds(x, y))
+            float scaleX = (float) drawingSurface.getWidth() / CANVAS_WIDTH;
+            float scaleY = (float) drawingSurface.getHeight() / CANVAS_HEIGHT;
+            float scale = Math.min(scaleX, scaleY);
 
+            float x = event.getX() / scale;
+            float y = event.getY() / scale;
+
+            for(int i = 0; i < model.customElement.size(); i++)
+            {
+                CustomElement.Element e = model.customElement.getElement(i);
+                if(e.contains(x, y))
+                {
+                    model.currentIndex = i;
+
+                    model.elementName.setText(e.getType().name());
+
+                    int color = e.getColor();
+                    model.redSeek.setProgress(Color.red(color));
+                    model.greenSeek.setProgress(Color.green(color));
+                    model.blueSeek.setProgress(Color.blue(color));
+
+                    drawingSurface.invalidate();
+                    break;
+                }
+
+            }
+
+        }
+        return true;
+    }
+
+    // Handle SeekBar Colors
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+        if(!fromUser) return;
+
+        CustomElement.Element current = model.getCurrentElement();
+        if(current == null)
+        {
+            return;
+        }
+
+        if(fromUser)
+        {
+            // Option 1
+            int red = model.redSeek.getProgress();
+            int green = model.greenSeek.getProgress();
+            int blue = model.blueSeek.getProgress();
+
+            model.customElement.getElement(model.currentIndex).setColor(Color.rgb(red, green, blue));
+
+            drawingSurface.invalidate();
         }
 
     }
 
-    public void selectedElement(CustomElement element)
-    {
-
-        model.getSelectedElement(element);
-        nameElement.setText(element.getName());
-
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
     }
 
-
-
-
-
-
-
-
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+    }
 }

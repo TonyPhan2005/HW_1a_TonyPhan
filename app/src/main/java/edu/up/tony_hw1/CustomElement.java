@@ -5,6 +5,7 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.RectF;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,35 +13,31 @@ public class CustomElement {
 
     public enum HouseType
     {
-        BASE, ROOF, SUN, DOOR, WINDOW, CLOUD
+        BASE, ROOF, SUN, TRUNK, LEAVES, CLOUD
     }
 
-    public static class Element {
+    public static class Element
+    {
         private HouseType type;
         private Paint paint;
-
-        private String name;
-
         private RectF bounds;
 
-        public Element(HouseType type, int color) {
+        public Element(HouseType type, int color, RectF bounds)
+        {
             this.type = type;
             this.paint = new Paint();
             this.paint.setColor(color);
+            this.bounds = bounds;
         }
 
-        public HouseType getType() {
-            return type;
-
-        }
-
-        public int getColor() {
-            return paint.getColor();
-        }
-
-        public String getName()
+        public HouseType getType()
         {
-            return name;
+            return type;
+        }
+
+        public int getColor()
+        {
+            return paint.getColor();
         }
 
         public void setColor(int color)
@@ -48,9 +45,9 @@ public class CustomElement {
             paint.setColor(color);
         }
 
-        public boolean withinBounds(float x, float y)
+        public boolean contains(float x, float y)
         {
-            return bounds.contains(x, y);
+            return bounds != null && bounds.contains(x, y);
         }
 
         public void draw(Canvas canvas)
@@ -59,44 +56,31 @@ public class CustomElement {
             {
                 // BASE ROOF SUN DOOR WINDOW CLOUD
                 case BASE:
-
-                    bounds.set(700, 750, 1500, 1625);
                     canvas.drawRect(bounds, paint);
-
-                    // canvas.drawRect(700, 750, 1500, 1625, paint);
                     break;
 
                 case ROOF:
-                    bounds.set(700, 400, 1500, 750);
                     Path triangle = new Path();
-
-                    triangle.moveTo(1125, 400);
-                    triangle.moveTo(700, 750);
-                    triangle.moveTo(1500, 750);
-
+                    triangle.moveTo(bounds.centerX(), bounds.top);
+                    triangle.lineTo(bounds.left, bounds.bottom);
+                    triangle.lineTo(bounds.right, bounds.bottom);
                     triangle.close();
                     canvas.drawPath(triangle, paint);
                     break;
 
                 case SUN:
-                    bounds.set(1850, 100, 2150, 400);
-                    // canvas.drawCircle(2000,250,150, paint);
-
-                    canvas.drawCircle(2000, 250, 150, paint);
+                    canvas.drawCircle(bounds.centerX(), bounds.centerY(), bounds.width() / 2, paint);
                     break;
 
-                case DOOR:
-                    bounds.set(850, 1300, 1000, 1625);
+                case TRUNK:
                     canvas.drawRect(bounds, paint);
                     break;
 
-                case WINDOW:
-                    bounds.set(1200,1200, 1400, 1400);
+                case LEAVES:
                     canvas.drawRect(bounds, paint);
                     break;
 
                 case CLOUD:
-                    bounds.set(200,100, 900, 300);
                     canvas.drawRect(bounds, paint);
                     break;
             }
@@ -111,13 +95,12 @@ public class CustomElement {
     {
         elements = new ArrayList<>();
 
-        // Set Color for each particular element
-        elements.add(new Element(HouseType.BASE, Color.RED));
-        elements.add(new Element(HouseType.ROOF, Color.GREEN));
-        elements.add(new Element(HouseType.SUN, Color.YELLOW));
-        elements.add(new Element(HouseType.DOOR, Color.BLACK));
-        elements.add(new Element(HouseType.WINDOW, Color.CYAN));
-        elements.add(new Element(HouseType.CLOUD, Color.WHITE));
+        elements.add(new Element(HouseType.BASE, Color.BLACK, new RectF(700, 750, 1500, 1625)));
+        elements.add(new Element(HouseType.ROOF, Color.GREEN, new RectF(700, 400, 1500, 750)));
+        elements.add(new Element(HouseType.SUN, Color.YELLOW, new RectF(1850, 100, 2150, 400)));
+        elements.add(new Element(HouseType.TRUNK, Color.GREEN, new RectF(2350, 1100, 2500, 1625)));
+        elements.add(new Element(HouseType.LEAVES, Color.CYAN, new RectF(2100, 800, 2700, 1100)));
+        elements.add(new Element(HouseType.CLOUD, Color.WHITE, new RectF(200, 100, 900, 300)));
     }
 
     public List<Element> getElements()

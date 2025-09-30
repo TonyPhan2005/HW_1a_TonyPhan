@@ -20,29 +20,37 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
+        setContentView(R.layout.activity_main);
+
+        DrawingSurface drawingSurface = findViewById(R.id.drawingSurface);
+        TextView elementName = findViewById(R.id.nameText);
+
+        SeekBar redSeek = findViewById(R.id.seekBar);
+        SeekBar greenSeek = findViewById(R.id.seekBar2);
+        SeekBar blueSeek = findViewById(R.id.seekBar2);
+
+        // Setting up model
+        DrawingModel model = new DrawingModel(drawingSurface.getModel());
+        model.elementName = elementName;
+        model.redSeek = redSeek;
+        model.greenSeek = greenSeek;
+        model.blueSeek = blueSeek;
+
+        // Setting up controller
+        DrawingController controller = new DrawingController(drawingSurface, model);
+
+        // Hooking up listeners/Functionality
+        drawingSurface.setOnTouchListener(controller);
+        redSeek.setOnSeekBarChangeListener(controller);
+        greenSeek.setOnSeekBarChangeListener(controller);
+        blueSeek.setOnSeekBarChangeListener(controller);
+
+
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
 
-        DrawingModel model = new DrawingModel();
-        DrawingSurface drawingSurface = new DrawingSurface(this, model);
-        setContentView(drawingSurface);
-
-        // Linking all of the IDs
-        TextView nameElement = findViewById(R.id.nameText);
-        SeekBar redSeek = findViewById(R.id.seekBar);
-        SeekBar greenSeek = findViewById(R.id.seekBar2);
-        SeekBar blueSeek = findViewById(R.id.seekBar3);
-
-        DrawingController controller = new DrawingController(model, drawingSurface, nameElement, redSeek, greenSeek, blueSeek);
-
-        // Linking functions to controller
-        drawingSurface.setController(controller);
-//        drawingSurface.setOnTouchListener(controller);
-//        redSeek.setOnSeekBarChangeListener(controller);
-//        greenSeek.setOnSeekBarChangeListener(controller);
-//        blueSeek.setOnSeekBarChangeListener(controller);
     }
 }
